@@ -21,7 +21,7 @@
         physics: {
             default: 'arcade',
             arcade: {
-                gravity: { y: 300 },
+                gravity: { y: 425 },
                 debug: false
             }
         },
@@ -40,7 +40,7 @@
     {
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
-        this.load.image('star', 'assets/star.png');
+        this.load.image('prism', 'assets/star.png');
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet('dude', 'assets/dude.png', {frameWidth: 32, frameHeight: 48 });
         cursors = this.input.keyboard.createCursorKeys();
@@ -54,9 +54,10 @@
 
         platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
-        platforms.create(600, 400, 'ground');
+        platforms.create(610, 400, 'ground');
         platforms.create(50, 250, 'ground');
-        platforms.create(750, 220, 'ground');
+        platforms.create(725, 225, 'ground');
+        platforms.create(400, 100, 'ground');
 
         player = this.physics.add.sprite(100, 450, 'dude');
 
@@ -85,19 +86,19 @@
 
         this.physics.add.collider(player, platforms);
 
-        stars = this.physics.add.group({
-            key: 'star',
-            repeat: 11,
-            setXY: { x: 12, y: 0, stepX: 70 }
+        prisms = this.physics.add.group({
+            key: 'prism',
+            repeat: 12,
+            setXY: { x: 12, y: 0, stepX: 65 }
         });
 
-        stars.children.iterate(function (child) {
+        prisms.children.iterate(function (child) {
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
         });
 
-        this.physics.add.collider(stars, platforms);
+        this.physics.add.collider(prisms, platforms);
 
-        this.physics.add.overlap(player, stars, collectStar, null, this);
+        this.physics.add.overlap(player, prisms, collectPrism, null, this);
 
         bombs = this.physics.add.group();
 
@@ -112,13 +113,13 @@
     {
         if (cursors.left.isDown)
         {
-            player.setVelocityX(-200);
+            player.setVelocityX(-230);
 
             player.anims.play('left', true);
         }
         else if (cursors.right.isDown)
         {
-            player.setVelocityX(200);
+            player.setVelocityX(230);
 
             player.anims.play('right', true);
         }
@@ -131,27 +132,27 @@
 
         if (cursors.up.isDown && player.body.touching.down)
         {
-            player.setVelocityY(-333);
+            player.setVelocityY(-425);
         }
     }
 
-    function collectStar (player, star)
+    function collectPrism (player, prism)
     {
-        star.disableBody(true, true);
+        prism.disableBody(true, true);
         score += 10;
         scoreText.setText('Score: ' + score);
 
-        if (stars.countActive(true) === 4 || stars.countActive(true) === 8 || stars.countActive(true) === 0)
+        if (prisms.countActive(true) === 4 || prisms.countActive(true) === 8 || prisms.countActive(true) === 0)
         {
             var bomb = bombs.create(x, 16, 'bomb');
             bomb.setBounce(1);
             bomb.setCollideWorldBounds(true);
-            bomb.setVelocity(Phaser.Math.Between(-350, 350), 25);
+            bomb.setVelocity(Phaser.Math.Between(-350, 350), 35);
         }
 
-        if (stars.countActive(true) === 0)
+        if (prisms.countActive(true) === 0)
         {
-            stars.children.iterate(function (child) {
+            prisms.children.iterate(function (child) {
                 child.enableBody(true, child.x, 0, true, true);
             });
             var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
